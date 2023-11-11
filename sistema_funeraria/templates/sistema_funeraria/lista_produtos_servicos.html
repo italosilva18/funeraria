@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Lista de Produtos/Serviços</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Valor Unitário</th>
+        <th>Tipo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for produto_servico in produtos_servicos %}
+        <tr>
+          <td>{{ produto_servico.nome }}</td>
+          <td>{{ produto_servico.descricao }}</td>
+          <td>{{ produto_servico.valor_unitario }}</td>
+          <td>{{ produto_servico.get_tipo_display }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">Nenhum produto/serviço encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
