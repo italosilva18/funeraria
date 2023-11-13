@@ -2,6 +2,7 @@
 
 {% block content %}
   <h2>Lista de Planos Funerários</h2>
+  <a href="{% url 'sistema_funeraria:criar_plano' %}">Criar Plano</a>
   <table class="table">
     <thead>
       <tr>
@@ -17,6 +18,10 @@
           <td>{{ plano.nome }}</td>
           <td>{{ plano.descricao }}</td>
           <td>{{ plano.valor }}</td>
+          <td>
+            <a href="{% url 'sistema_funeraria:editar_plano' plano.id %}">Editar</a> |
+            <a href="{% url 'sistema_funeraria:excluir_plano' plano.id %}">Excluir</a>
+        </td>
           <td>
             <ul>
               {% for produto_servico in plano.produtos_servicos.all %}

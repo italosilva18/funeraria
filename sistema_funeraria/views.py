@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic.list import ListView
-from .models import Cliente, Funcionario, Usuario, PlanoFunerario, ProdutoServico, Orcamento, Contato
+from .models import Cliente, Funcionario, Usuario, PlanoFunerario, ProdutoServico, Orcamento
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm
+from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm, UsuarioForm
 
 
 def error_404(request, exception):
@@ -125,16 +125,46 @@ def excluir_funcionario(request, id):
 
 
 
+#usuarios
 class lista_usuariosView(LoginRequiredMixin, ListView):
     model = Usuario
-    template_name = 'sistema_funeraria/lista_usuarios.html'
+    template_name = 'sistema_funeraria/usuarios/lista_usuarios.html'
     context_object_name = 'usuarios'
+
+def criar_usuarios(request):
+    if request.method == "POST":
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            usuario = form.save()
+            return redirect('sistema_funeraria:lista_usuarios')
+    else:
+        form = UsuarioForm()
+    return render(request, 'sistema_funeraria/usuarios/criar_usuario.html', {'form': form})
+
+def editar_usuarios(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    if request.method == "POST":
+        form = UsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            usuario = form.save()
+            return redirect('sistema_funeraria:lista_usuarios')
+    else:
+        form = UsuarioForm(instance=usuario)
+    return render(request, 'sistema_funeraria/usuarios/editar_usuario.html', {'form': form})
+
+def excluir_usuarios(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    if request.method == "POST":
+        usuario.delete()
+        return redirect('sistema_funeraria:lista_usuarios')
+    return render(request, 'sistema_funeraria/usuarios/excluir_usuario.html', {'usuario': usuario})
 
 
 class lista_planosView(LoginRequiredMixin,ListView):
     model = PlanoFunerario
-    template_name = 'sistema_funeraria/lista_planos.html'
+    template_name = 'sistema_funeraria/plano/lista_planos.html'
     context_object_name = 'planos'
+
 
 def criar_plano(request):
     if request.method == "POST":

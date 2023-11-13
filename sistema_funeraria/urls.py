@@ -25,6 +25,9 @@ urlpatterns = [
     path('funcionarios/editar/<int:id>/', views.editar_funcionario, name='editar_funcionarios'),
     path('funcionarios/excluir/<int:id>/', views.excluir_funcionario, name='excluir_funcionarios'),
     #Usuario
+    path('usuarios/criar/', views.criar_usuarios, name='criar_usuarios'),
+    path('usuarios/editar/<int:id>/', views.editar_usuarios, name='editar_usuarios'),
+    path('usuarios/excluir/<int:id>/', views.excluir_usuarios, name='excluir_usuarios'),
     #Planos
     path('plano/criar/', views.criar_plano, name='criar_plano'),
     path('plano/editar/<int:id>/', views.editar_plano, name='editar_plano'),

@@ -2,6 +2,7 @@
 
 {% block content %}
   <h2>Lista de Usuários</h2>
+  <a href="{% url 'sistema_funeraria:criar_usuarios' %}">Criar Usuario</a>
   <table class="table">
     <thead>
       <tr>
@@ -16,6 +17,10 @@
           <td>{{ usuario.user.first_name }} {{ usuario.user.last_name }}</td>
           <td>{{ usuario.user.email }}</td>
           <td>{{ usuario.nivel_acesso }}</td>
+          <td>
+            <a href="{% url 'sistema_funeraria:editar_usuarios' usuarios.id %}">Editar</a> |
+            <a href="{% url 'sistema_funeraria:excluir_usuarios' usuarios.id %}">Excluir</a>
+        </td>
         </tr>
       {% empty %}
         <tr>
