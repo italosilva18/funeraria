@@ -1,67 +1,177 @@
-from django.shortcuts import redirect
-from django.shortcuts import render
-from .models import Cliente, Funcionario, Usuario, PlanoFunerario, ProdutoServico, Orcamento, Dashboard
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from django.views.generic.list import ListView
+from .models import Cliente, Funcionario, Usuario, PlanoFunerario, ProdutoServico, Orcamento, Contato
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm
 
+
+def error_404(request, exception):
+    return redirect('sistema_funeraria:login')
 
 
 @login_required
 def dashboard_view(request):
-    clientes = Cliente.objects.count()
-    funcionarios = Funcionario.objects.count()
-    usuarios = Usuario.objects.count()
-    planos = PlanoFunerario.objects.count()
-    produtos_servicos = ProdutoServico.objects.count()
-    orcamentos = Orcamento.objects.count()
-
     context = {
-        'clientes': clientes,
-        'funcionarios': funcionarios,
-        'usuarios': usuarios,
-        'planos': planos,
-        'produtos_servicos': produtos_servicos,
-        'orcamentos': orcamentos,
+        'clientes': Cliente.objects.count(),
+        'funcionarios': Funcionario.objects.count(),
+        'usuarios': Usuario.objects.count(),
+        'planos': PlanoFunerario.objects.count(),
+        'produtos_servicos': ProdutoServico.objects.count(),
+        'orcamentos': Orcamento.objects.count(),
     }
 
     return render(request, 'sistema_funeraria/dashboard.html', context)
 
-def login_view(request):
-    if request.method == 'POST':
+
+class LoginView(View):
+    def get(self, request):
+        return render(request, 'sistema_funeraria/login.html', {'form': AuthenticationForm()})
+
+    def post(self, request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            if user is not None:
+            if user is not None and user.is_active:
                 login(request, user)
-                return redirect('dashboard/')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'sistema_funeraria/login.html', {'form': form})
+                return redirect('sistema_funeraria:dashboard')
+        return render(request, 'sistema_funeraria/login.html', {'form': form})
 
-@login_required
-def lista_clientes(request):
-    clientes = Cliente.objects.all()
-    return render(request, 'sistema_funeraria/lista_clientes.html', {'clientes': clientes})
-@login_required
-def lista_funcionarios(request):
-    funcionarios = Funcionario.objects.all()
-    return render(request, 'sistema_funeraria/lista_funcionarios.html', {'funcionarios': funcionarios})
-@login_required
-def lista_usuarios(request):
-    usuarios = Usuario.objects.all()
-    return render(request, 'sistema_funeraria/lista_usuarios.html', {'usuarios': usuarios})
-@login_required
-def lista_planos(request):
-    planos = PlanoFunerario.objects.all()
-    return render(request, 'sistema_funeraria/lista_planos.html', {'planos': planos})
-@login_required
-def lista_produtos_servicos(request):
-    produtos_servicos = ProdutoServico.objects.all()
-    return render(request, 'sistema_funeraria/lista_produtos_servicos.html', {'produtos_servicos': produtos_servicos})
-@login_required
-def lista_orcamentos(request):
-    orcamentos = Orcamento.objects.all()
-    return render(request, 'sistema_funeraria/lista_orcamentos.html', {'orcamentos': orcamentos})
+
+def logout_view(request):
+    logout(request)
+    return redirect('sistema_funeraria:login')
+
+
+
+#clientes
+class ListaClientesView(LoginRequiredMixin, ListView):
+    model = Cliente
+    template_name = 'sistema_funeraria/cliente/lista_clientes.html'
+    context_object_name = 'clientes'
+
+def criar_cliente(request):
+    if request.method == "POST":
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            cliente = form.save()
+            return redirect('sistema_funeraria:lista_clientes')
+    else:
+        form = ClienteForm()
+    return render(request, 'sistema_funeraria/cliente/criar_cliente.html', {'form': form})
+
+
+def editar_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    if request.method == "POST":
+        form = ClienteForm(request.POST, instance=cliente)
+        contato_form = ContatoForm(request.POST, instance=cliente.contato)
+        if form.is_valid() and contato_form.is_valid():
+            form.save()
+            contato_form.save()
+            return HttpResponseRedirect('/lista_clientes/')
+    else:
+        form = ClienteForm(instance=cliente)
+        contato_form = ContatoForm(instance=cliente.contato)
+    return render(request, 'sistema_funeraria/cliente/editar_cliente.html', {'form': form, 'contato_form': contato_form})
+
+def excluir_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    if request.method == "POST":
+        cliente.delete()
+        return HttpResponseRedirect('/lista_clientes/')
+    return render(request, 'sistema_funeraria/cliente/excluir_cliente.html', {'cliente': cliente})
+
+
+
+class ListaFuncionariosView(LoginRequiredMixin, ListView):
+    model = Funcionario
+    template_name = 'sistema_funeraria/funcionario/lista_funcionarios.html'
+    context_object_name = 'funcionarios'
+
+def criar_funcionario(request):
+    if request.method == "POST":
+        form = FuncionarioForm(request.POST)
+        if form.is_valid():
+            funcionario = form.save()
+            return redirect('sistema_funeraria:lista_funcionarios')
+    else:
+        form = FuncionarioForm()
+    return render(request, 'sistema_funeraria/funcionario/criar_funcionario.html', {'form': form})
+
+def editar_funcionario(request, id):
+    funcionario = get_object_or_404(Funcionario, id=id)
+    if request.method == "POST":
+        form = FuncionarioForm(request.POST, instance=funcionario)
+        if form.is_valid():
+            funcionario = form.save()
+            return redirect('sistema_funeraria:lista_funcionarios')
+    else:
+        form = FuncionarioForm(instance=funcionario)
+    return render(request, 'sistema_funeraria/funcionario/editar_funcionario.html', {'form': form})
+
+def excluir_funcionario(request, id):
+    funcionario = get_object_or_404(Funcionario, id=id)
+    if request.method == "POST":
+        funcionario.delete()
+        return redirect('sistema_funeraria:lista_funcionarios')
+    return render(request, 'sistema_funeraria/funcionario/excluir_funcionario.html', {'funcionario': funcionario})
+
+
+
+class lista_usuariosView(LoginRequiredMixin, ListView):
+    model = Usuario
+    template_name = 'sistema_funeraria/lista_usuarios.html'
+    context_object_name = 'usuarios'
+
+
+class lista_planosView(LoginRequiredMixin,ListView):
+    model = PlanoFunerario
+    template_name = 'sistema_funeraria/lista_planos.html'
+    context_object_name = 'planos'
+
+def criar_plano(request):
+    if request.method == "POST":
+        form = PlanoForm(request.POST)
+        if form.is_valid():
+            plano = form.save()
+            return redirect('sistema_funeraria:lista_planos')
+    else:
+        form = PlanoForm()
+    return render(request, 'sistema_funeraria/plano/criar_plano.html', {'form': form})
+
+def editar_plano(request, id):
+    plano = get_object_or_404(PlanoFunerario, id=id)
+    if request.method == "POST":
+        form = PlanoForm(request.POST, instance=plano)
+        if form.is_valid():
+            plano = form.save()
+            return redirect('sistema_funeraria:lista_planos')
+    else:
+        form = PlanoForm(instance=plano)
+    return render(request, 'sistema_funeraria/plano/editar_plano.html', {'form': form})
+
+def excluir_plano(request, id):
+    plano = get_object_or_404(PlanoFunerario, id=id)
+    if request.method == "POST":
+        plano.delete()
+        return redirect('sistema_funeraria:lista_planos')
+    return render(request, 'sistema_funeraria/plano/excluir_plano.html', {'plano': plano})
+
+class lista_produtos_servicosView(LoginRequiredMixin,ListView):
+    model = ProdutoServico
+    template_name = 'sistema_funeraria/lista_produtos_servicos.html'    
+    context_object_name = 'produtos_servicos'
+    
+class lista_orcamentosView(LoginRequiredMixin, ListView):
+    model = Orcamento
+    template_name = 'sistema_funeraria/lista_orcamentos.html'
+    context_object_name = 'orcamentos'
+
+

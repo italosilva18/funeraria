@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Lista de Usuários</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Nível de Acesso</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for usuario in usuarios %}
+        <tr>
+          <td>{{ usuario.user.first_name }} {{ usuario.user.last_name }}</td>
+          <td>{{ usuario.user.email }}</td>
+          <td>{{ usuario.nivel_acesso }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">Nenhum usuário encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

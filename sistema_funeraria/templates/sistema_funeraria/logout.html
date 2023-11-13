@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h2>Logout</h2>
+    <p>Você foi deslogado com sucesso. Obrigado por usar nosso sistema!</p>
+    <a href="{% url 'sistema_funeraria:login' %}">Clique aqui para fazer login novamente.</a>
+  </div>
+{% endblock %}
