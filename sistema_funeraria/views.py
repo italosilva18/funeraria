@@ -196,12 +196,12 @@ def excluir_plano(request, id):
 
 class lista_produtos_servicosView(LoginRequiredMixin,ListView):
     model = ProdutoServico
-    template_name = 'sistema_funeraria/lista_produtos_servicos.html'    
+    template_name = 'sistema_funeraria/produtos_servicos/lista_produtos_servicos.html'    
     context_object_name = 'produtos_servicos'
     
 class lista_orcamentosView(LoginRequiredMixin, ListView):
     model = Orcamento
-    template_name = 'sistema_funeraria/lista_orcamentos.html'
+    template_name = 'sistema_funeraria/orcamentos/lista_orcamentos.html'
     context_object_name = 'orcamentos'
 
 
