@@ -6,7 +6,7 @@ app_name = 'sistema_funeraria'
 
 urlpatterns = [
     
-    #path('', views.LoginView, name='login'),
+    #path('', views.LoginView.as_view, name='login'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
@@ -32,7 +32,14 @@ urlpatterns = [
     path('plano/criar/', views.criar_plano, name='criar_plano'),
     path('plano/editar/<int:id>/', views.editar_plano, name='editar_plano'),
     path('plano/excluir/<int:id>/', views.excluir_plano, name='excluir_plano'),
-
+    #orcamentos
+    path('orcamento/criar/', views.criar_orcamento, name='criar_orcamento'),
+    path('orcamento/editar/<int:id>/', views.editar_orcamento, name='editar_orcamento'),
+    path('orcamento/excluir/<int:id>/', views.excluir_orcamento, name='excluir_orcamento'),
+    #Produto_Servico
+    path('produto_servico/criar/', views.criar_produto_servico, name='criar_produto_servico'),
+    path('produto_servico/editar/<int:id>/', views.editar_produto_servico, name='editar_produto_servico'),
+    path('produto_servico/excluir/<int:id>/', views.excluir_produto_servico, name='excluir_produto_servico'),
 ]
 
 

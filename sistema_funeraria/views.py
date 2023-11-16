@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm, UsuarioForm
+from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm, ProdutoServicoForm, UsuarioForm, OrcamentoForm
 
 
 def error_404(request, exception):
@@ -198,10 +198,67 @@ class lista_produtos_servicosView(LoginRequiredMixin,ListView):
     model = ProdutoServico
     template_name = 'sistema_funeraria/produtos_servicos/lista_produtos_servicos.html'    
     context_object_name = 'produtos_servicos'
-    
+
+def criar_produto_servico(request):
+    if request.method == "POST":
+        form = ProdutoServicoForm(request.POST)
+        if form.is_valid():
+            produto_servico = form.save()
+            return redirect('sistema_funeraria:lista_produtos_servicos')
+    else:
+        form = ProdutoServicoForm()
+    return render(request, 'sistema_funeraria/produtos_servicos/criar_produto_servico.html', {'form': form})
+
+def editar_produto_servico(request, id):
+    produto_servico = get_object_or_404(ProdutoServico, id=id)
+    if request.method == "POST":
+        form = ProdutoServicoForm(request.POST, instance=produto_servico)
+        if form.is_valid():
+            produto_servico = form.save()
+            return redirect('sistema_funeraria:lista_produtos_servicos')
+    else:
+        form = ProdutoServicoForm(instance=produto_servico)
+    return render(request, 'sistema_funeraria/produtos_servicos/editar_produto_servico.html', {'form': form})
+
+def excluir_produto_servico(request, id):
+    produto_servico = get_object_or_404(ProdutoServico, id=id)
+    if request.method == "POST":
+        produto_servico.delete()
+        return redirect('sistema_funeraria:lista_produtos_servicos')
+    return render(request, 'sistema_funeraria/produtos_servicos/excluir_produto_servico.html', {'produto_servico': produto_servico})
+
 class lista_orcamentosView(LoginRequiredMixin, ListView):
     model = Orcamento
     template_name = 'sistema_funeraria/orcamentos/lista_orcamentos.html'
     context_object_name = 'orcamentos'
 
 
+
+# Para Orcamento
+def criar_orcamento(request):
+    if request.method == "POST":
+        form = OrcamentoForm(request.POST)
+        if form.is_valid():
+            orcamento = form.save()
+            return redirect('sistema_funeraria:lista_orcamentos')
+    else:
+        form = OrcamentoForm()
+    return render(request, 'sistema_funeraria/orcamentos/criar_orcamento.html', {'form': form})
+
+def editar_orcamento(request, id):
+    orcamento = get_object_or_404(Orcamento, id=id)
+    if request.method == "POST":
+        form = OrcamentoForm(request.POST, instance=orcamento)
+        if form.is_valid():
+            orcamento = form.save()
+            return redirect('sistema_funeraria:lista_orcamentos')
+    else:
+        form = OrcamentoForm(instance=orcamento)
+    return render(request, 'sistema_funeraria/orcamentos/editar_orcamento.html', {'form': form})
+
+def excluir_orcamento(request, id):
+    orcamento = get_object_or_404(Orcamento, id=id)
+    if request.method == "POST":
+        orcamento.delete()
+        return redirect('sistema_funeraria:lista_orcamentos')
+    return render(request, 'sistema_funeraria/orcamentos/excluir_orcamento.html', {'orcamento': orcamento})

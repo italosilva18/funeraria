@@ -2,6 +2,7 @@
 
 {% block content %}
   <h2>Lista de Orçamentos</h2>
+  <a class="btn btn-outline-danger" href="{% url 'sistema_funeraria:criar_orcamento' %}">Criar Orcamento</a>
   <table class="table">
     <thead>
       <tr>
@@ -15,6 +16,10 @@
         <tr>
           <td>{{ orcamento.cliente.user.first_name }} {{ orcamento.cliente.user.last_name }}</td>
           <td>{{ orcamento.valor_total }}</td>
+          <td>
+            <a href="{% url 'sistema_funeraria:editar_orcamento' orcamento.id %}">Editar</a> |
+            <a href="{% url 'sistema_funeraria:excluir_orcamento' orcamento.id %}">Excluir</a>
+          </td>
           <td>
             <ul>
               {% for produto_servico in orcamento.produtos_servicos.all %}
