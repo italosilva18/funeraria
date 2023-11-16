@@ -20,8 +20,9 @@
           <td>{{ funcionario.setor }}</td>
           <td>{{ funcionario.data_admissao }}</td>
           <td>
-            <a href="{% url 'sistema_funeraria:editar_funcionario' funcionario.id %}">Editar</a> |
+            <a href="{% url 'sistema_funeraria:editar_funcionario' funcionario.id %}">Editar</a>|
             <a href="{% url 'sistema_funeraria:excluir_funcionario' funcionario.id %}">Excluir</a>
+
         </td>
         </tr>
       {% empty %}

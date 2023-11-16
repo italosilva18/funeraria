@@ -21,9 +21,10 @@ urlpatterns = [
     path('clientes/editar/<int:id>/', views.editar_cliente, name='editar_cliente'),
     path('clientes/excluir/<int:id>/', views.excluir_cliente, name='excluir_cliente'),
     #Funcionario
-    path('funcionarios/criar/', views.criar_funcionario, name='criar_funcionario'),
-    path('funcionarios/editar/<int:id>/', views.editar_funcionario, name='editar_funcionarios'),
-    path('funcionarios/excluir/<int:id>/', views.excluir_funcionario, name='excluir_funcionarios'),
+    path('funcionario/criar/', views.criar_funcionario, name='criar_funcionario'),
+    path('funcionarios/editar/<int:id>/', views.editar_funcionario, name='editar_funcionario'),
+    path('funcionarios/excluir/<int:id>/', views.excluir_funcionario, name='excluir_funcionario'),
+
     #Usuario
     path('usuarios/criar/', views.criar_usuarios, name='criar_usuarios'),
     path('usuarios/editar/<int:id>/', views.editar_usuarios, name='editar_usuarios'),

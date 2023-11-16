@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic.list import ListView
@@ -7,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm, ProdutoServicoForm, UsuarioForm, OrcamentoForm
+from .forms import ClienteForm, ContatoForm, FuncionarioForm, PlanoForm, ProdutoServicoForm, UserForm, UsuarioForm, OrcamentoForm
 
 
 def error_404(request, exception):
@@ -133,12 +134,13 @@ class lista_usuariosView(LoginRequiredMixin, ListView):
 
 def criar_usuarios(request):
     if request.method == "POST":
-        form = UsuarioForm(request.POST)
+        form = UserForm(request.POST)
         if form.is_valid():
-            usuario = form.save()
+            new_user = User.objects.create_user(**form.cleaned_data)
+            new_user.save()
             return redirect('sistema_funeraria:lista_usuarios')
     else:
-        form = UsuarioForm()
+        form = UserForm()
     return render(request, 'sistema_funeraria/usuarios/criar_usuario.html', {'form': form})
 
 def editar_usuarios(request, id):
