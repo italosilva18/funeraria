@@ -136,12 +136,18 @@ def criar_usuarios(request):
     if request.method == "POST":
         form = UserForm(request.POST)
         if form.is_valid():
-            new_user = User.objects.create_user(**form.cleaned_data)
-            new_user.save()
-            return redirect('sistema_funeraria:lista_usuarios')
+            cleaned_data = form.cleaned_data
+            if cleaned_data['password1'] != cleaned_data['password2']:
+                # As senhas não correspondem
+                raise forms.ValidationError("As senhas não correspondem.")
+            else:
+                new_user = User.objects.create_user(username=cleaned_data['username'], password=cleaned_data['password1'])
+                new_user.save()
+                return redirect('sistema_funeraria:lista_usuarios')
     else:
         form = UserForm()
     return render(request, 'sistema_funeraria/usuarios/criar_usuario.html', {'form': form})
+
 
 def editar_usuarios(request, id):
     usuario = get_object_or_404(Usuario, id=id)

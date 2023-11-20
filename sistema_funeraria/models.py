@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -21,6 +22,7 @@ class Cliente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     endereco = models.OneToOneField(Endereco, on_delete=models.CASCADE)
     contato = models.OneToOneField(Contato, on_delete=models.CASCADE)
+    data_nascimento = models.DateField(default=date.today)
 
     def __str__(self):
         return f'{self.user.username}'
@@ -41,6 +43,7 @@ class Funcionario(models.Model):
     cargo = models.CharField(max_length=255)
     setor = models.CharField(max_length=255)
     data_admissao = models.DateField()
+    salario = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
 
     def __str__(self):
         return f'{self.user.username}, {self.cargo}'

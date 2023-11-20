@@ -50,6 +50,8 @@ class UserForm(UserCreationForm):
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
         user.email = self.cleaned_data['email']
+        password = self.cleaned_data.get('password1')
+        user.set_password(password)
         if commit:
             user.save()
         return user
