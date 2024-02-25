@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Lista de Planos Funerários</h2>
+  <a href="{% url 'sistema_funeraria:criar_plano' %}">Criar Plano</a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Produtos/Serviços</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for plano in planos %}
+        <tr>
+          <td>{{ plano.nome }}</td>
+          <td>{{ plano.descricao }}</td>
+          <td>{{ plano.valor }}</td>
+          <td>
+            <a href="{% url 'sistema_funeraria:editar_plano' plano.id %}">Editar</a> |
+            <a href="{% url 'sistema_funeraria:excluir_plano' plano.id %}">Excluir</a>
+        </td>
+          <td>
+            <ul>
+              {% for produto_servico in plano.produtos_servicos.all %}
+                <li>{{ produto_servico.nome }}</li>
+              {% empty %}
+                <li>Nenhum produto/serviço encontrado.</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">Nenhum plano funerário encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+<div class="container">
+    <h1>Lista de Clientes</h1>
+    <a href="{% url 'sistema_funeraria:criar_cliente' %}">Criar Cliente</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.user.username }}</td>
+                <td>{{ cliente.contato.email }}</td>
+                <td>{{ cliente.contato.telefone }}</td>
+                <td>
+                    <a href="{% url 'sistema_funeraria:editar_cliente' cliente.id %}">Editar</a> |
+                    <a href="{% url 'sistema_funeraria:excluir_cliente' cliente.id %}">Excluir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

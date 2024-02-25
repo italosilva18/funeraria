@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Lista de Orçamentos</h2>
+  <a class="btn btn-outline-danger" href="{% url 'sistema_funeraria:criar_orcamento' %}">Criar Orcamento</a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Valor Total</th>
+        <th>Produtos/Serviços</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for orcamento in orcamentos %}
+        <tr>
+          <td>{{ orcamento.cliente.user.first_name }} {{ orcamento.cliente.user.last_name }}</td>
+          <td>{{ orcamento.valor_total }}</td>
+          <td>
+            <a href="{% url 'sistema_funeraria:editar_orcamento' orcamento.id %}">Editar</a> |
+            <a href="{% url 'sistema_funeraria:excluir_orcamento' orcamento.id %}">Excluir</a>
+          </td>
+          <td>
+            <ul>
+              {% for produto_servico in orcamento.produtos_servicos.all %}
+                <li>{{ produto_servico.nome }}</li>
+              {% empty %}
+                <li>Nenhum produto/serviço encontrado.</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">Nenhum orçamento encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

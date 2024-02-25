@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Excluir funcionário</h2>
+  <p>Tem certeza de que deseja excluir este funcionário?</p>
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit">Excluir</button>
+  </form>
+{% endblock %}
