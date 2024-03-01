@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-  <h2>Excluir produto/serviço</h2>
-  <form method="post">
-    {% csrf_token %}
-    <p>Tem certeza que deseja excluir o produto/serviço "{{ produto_servico }}"?</p>
-    <button type="submit">Sim, excluir</button>
-  </form>
-{% endblock %}
