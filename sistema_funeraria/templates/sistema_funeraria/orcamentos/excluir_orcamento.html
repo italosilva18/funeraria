@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-  <h2>Excluir orçamento</h2>
-  <form method="post">
-    {% csrf_token %}
-    <p>Tem certeza que deseja excluir o orçamento "{{ orcamento }}"?</p>
-    <button type="submit">Sim, excluir</button>
-  </form>
-{% endblock %}
