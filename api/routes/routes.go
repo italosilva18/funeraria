@@ -8,11 +8,11 @@ import (
 
 func SetupRoutes(e *echo.Echo) {
 	// Rota de cadastro de clientes
-	e.POST("/clientes", controllers.CreateCliente)
-	e.GET("/clientes", controllers.GetClientes)
-	e.GET("/clientes/:id", controllers.GetClienteByID)
-	e.PUT("/clientes/:id", controllers.UpdateCliente)
-	e.DELETE("/clientes/:id", controllers.DeleteCliente)
+	e.POST("/clientes", controllers.CriarCliente)
+	e.GET("/clientes", controllers.ObterClientes)
+	e.GET("/clientes/:id", controllers.ObterClienteByID)
+	e.PUT("/clientes/:id", controllers.AtualizarCliente)
+	e.DELETE("/clientes/:id", controllers.DeletarCliente)
 
 	/*	// Rota de gestão de serviços funerários
 		e.POST("/servicos", controllers.CreateServico)
