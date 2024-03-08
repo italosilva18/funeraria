@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"funeraria/api/models"
+	"github.com/italosilva18/funeraria/api/models"
 
 	"github.com/labstack/echo/v4"
 )

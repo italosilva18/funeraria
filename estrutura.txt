@@ -1,4 +1,4 @@
-FUNERARIA
+FUNERARIA/
 │
 ├── api/
 │   ├── controllers/
@@ -41,6 +41,22 @@ FUNERARIA
 │   ├── img/
 │   │   └── ... (imagens e outros recursos)
 │   │
-│   └── index.html
+│   ├── index.html
+│   │
+│   ├── login.html
+│   │
+│   ├── dashboard.html
+│   │
+│   ├── clientes.html
+│   │
+│   ├── servicos.html
+│   │
+│   ├── produtos.html
+│   │
+│   ├── agendamentos.html
+│   │
+│   ├── faturas.html
+│   │
+│   └── perfil.html
 │
 └── main.go

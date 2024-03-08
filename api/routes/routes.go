@@ -14,36 +14,36 @@ func SetupRoutes(e *echo.Echo) {
 	e.PUT("/clientes/:id", controllers.AtualizarCliente)
 	e.DELETE("/clientes/:id", controllers.DeletarCliente)
 
-	/*	// Rota de gestão de serviços funerários
-		e.POST("/servicos", controllers.CreateServico)
-		e.GET("/servicos", controllers.GetServicos)
-		e.GET("/servicos/:id", controllers.GetServicoByID)
-		e.PUT("/servicos/:id", controllers.UpdateServico)
-		e.DELETE("/servicos/:id", controllers.DeleteServico)
+	// Rota de gestão de serviços funerários
+	e.POST("/servicos", controllers.CriarServico)
+	e.GET("/servicos", controllers.ObterServicos)
+	e.GET("/servicos/:id", controllers.ObterServicoByID)
+	e.PUT("/servicos/:id", controllers.AtualizarServico)
+	e.DELETE("/servicos/:id", controllers.DeletarServico)
 
-		// Rota de controle de estoque e produtos
-		e.POST("/produtos", controllers.CreateProduto)
-		e.GET("/produtos", controllers.GetProdutos)
-		e.GET("/produtos/:id", controllers.GetProdutoByID)
-		e.PUT("/produtos/:id", controllers.UpdateProduto)
-		e.DELETE("/produtos/:id", controllers.DeleteProduto)
+	// Rota de controle de estoque e produtos
+	e.POST("/produtos", controllers.CriarProduto)
+	e.GET("/produtos", controllers.ObterProdutos)
+	e.GET("/produtos/:id", controllers.ObterProdutoByID)
+	e.PUT("/produtos/:id", controllers.AtualizarProduto)
+	e.DELETE("/produtos/:id", controllers.DeletarProduto)
 
-		// Rota de agendamento e calendário
-		e.POST("/agendamentos", controllers.CreateAgendamento)
-		e.GET("/agendamentos", controllers.GetAgendamentos)
-		e.GET("/agendamentos/:id", controllers.GetAgendamentoByID)
-		e.PUT("/agendamentos/:id", controllers.UpdateAgendamento)
-		e.DELETE("/agendamentos/:id", controllers.DeleteAgendamento)
+	// Rota de agendamento e calendário
+	e.POST("/agendamentos", controllers.CriarAgendamento)
+	e.GET("/agendamentos", controllers.ObterAgendamentos)
+	e.GET("/agendamentos/:id", controllers.ObterAgendamentoByID)
+	e.PUT("/agendamentos/:id", controllers.AtualizarAgendamento)
+	e.DELETE("/agendamentos/:id", controllers.DeletarAgendamento)
 
-		// Rota de financeiro e cobranças
-		e.POST("/faturas", controllers.CreateFatura)
-		e.GET("/faturas", controllers.GetFaturas)
-		e.GET("/faturas/:id", controllers.GetFaturaByID)
-		e.PUT("/faturas/:id", controllers.UpdateFatura)
-		e.DELETE("/faturas/:id", controllers.DeleteFatura)
+	// Rota de financeiro e cobranças
+	e.POST("/faturas", controllers.CriarFatura)
+	e.GET("/faturas", controllers.ObterFaturas)
+	e.GET("/faturas/:id", controllers.ObterFaturaByID)
+	e.PUT("/faturas/:id", controllers.AtualizarFatura)
+	e.DELETE("/faturas/:id", controllers.DeletarFatura)
 
-		// Rota de autenticação do administrador
-		e.POST("/admin/login", controllers.AdminLogin)
-		e.POST("/admin/logout", controllers.AdminLogout)
-	*/
+	// Rota de autenticação do administrador
+	e.POST("/admin/login", controllers.AdminLogin)
+	e.POST("/admin/logout", controllers.AdminLogout)
+
 }
