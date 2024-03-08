@@ -1,0 +1,46 @@
+FUNERARIA
+│
+├── api/
+│   ├── controllers/
+│   │   ├── clientes_controller.go
+│   │   ├── servicos_controller.go
+│   │   ├── produtos_controller.go
+│   │   ├── agendamentos_controller.go
+│   │   ├── faturas_controller.go
+│   │   └── admin_controller.go
+│   │
+│   ├── middleware/
+│   │   └── authentication_middleware.go
+│   │
+│   ├── routes/
+│   │   └── routes.go
+│   │
+│   ├── models/
+│   │   ├── cliente.go
+│   │   ├── servico.go
+│   │   ├── produto.go
+│   │   ├── agendamento.go
+│   │   ├── fatura.go
+│   │   └── admin.go
+│   │
+│   └── app.go
+│
+├── config/
+│   └── config.go
+│
+├── database/
+│   └── mongo.go
+│
+├── frontend/
+│   ├── css/
+│   │   └── style.css
+│   │
+│   ├── js/
+│   │   └── script.js
+│   │
+│   ├── img/
+│   │   └── ... (imagens e outros recursos)
+│   │
+│   └── index.html
+│
+└── main.go
