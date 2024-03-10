@@ -1,0 +1,63 @@
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.mt-5 {
+    margin-top: 3rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Estilos para cabeçalho */
+header {
+    background-color: #ffffff;
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Estilos para rodapé */
+footer {
+    background-color: #f8f9fa;
+    padding: 1rem 0;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+.fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Estilos para formulários */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Estilos para botões */
+.btn {
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
