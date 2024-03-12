@@ -12,29 +12,6 @@ Este é um sistema desenvolvido em Go, utilizando o framework Echo, Bootstrap pa
 - Registro de serviços prestados, como velórios, cremações, sepultamentos e traslados.
 - Atribuição de responsabilidades a funcionários ou parceiros envolvidos nos serviços.
 
-### Controle de Estoque e Produtos:
-- Gerenciamento do estoque de caixões, urnas, flores, velas e outros itens relacionados.
-- Registro de entradas e saídas de produtos.
-
-### Agendamento e Calendário:
-- Agendamento de serviços funerários com base na disponibilidade de funcionários e locais.
-- Lembrete automático para datas importantes, como aniversários de falecimento.
-
-### Financeiro e Cobranças:
-- Emissão de faturas para serviços prestados.
-- Controle de pagamentos, parcelas e inadimplências.
-
-### Relatórios e Estatísticas:
-- Geração de relatórios sobre serviços realizados, receitas, despesas e tendências.
-- Análise de dados para tomar decisões informadas.
-
-### Integração com Cemitérios e Órgãos Públicos:
-- Facilitação da comunicação com cemitérios, cartórios e outros órgãos.
-- Automação de processos, como emissão de certidões de óbito.
-
-### Segurança e Backup:
-- Manutenção dos dados dos clientes seguros e protegidos.
-- Realização de backups regulares para evitar perda de informações.
 
 ## Requisitos de Desenvolvimento:
 - Linguagem: Go
