@@ -1,0 +1,7 @@
+/firebird
+/config
+/mysql
+/mysqldump
+/vendor
+.env
+robo.exe

@@ -1,0 +1,20 @@
+package querys
+
+// QueryHandler define a interface que as versões devem implementar
+type QueryHandler interface {
+	TOTAL_VENDIDO_DIA() string
+	TICKET_MEDIO_DIA() string
+	PRODUTOS_POR_ATENDIMENTO_DIA() string
+	TOTAL_CUPONS_VALIDOS_DIA() string
+	TOTAL_CUPONS_CANCELADOS_DIA() string
+	VENDAS_POR_FAIXA_HORARIA() string
+	PRODUTOS_MAIS_VENDIDO_DIA() string
+	PRODUTOS_ESTATISTICA() string
+	TOTAL_VENDIDO_POR_MODALIDADES() string
+	ESTORNO_DE_CUPONS_POR_OPERADOR_DIA() string
+	DESCONTOS_DE_ITENS_DIA() string
+	VENDAS_POR_SECOES_DIA() string
+	TOTAL_CUPONS_POR_OPERADOR_DIA() string
+	VENDAS_POR_VENDEDOR_DIA() string
+	MODALIDADES_PAGAMENTO_OPERADOR_DIA() string
+}
