@@ -355,7 +355,7 @@ func Teste() (map[int]repository.ReportRepository, map[int]*sql.DB, error) {
 		case "ARIUS-ERP":
 			repo = repository.NewReportRepository(db, qh)
 		case "CONCINCO":
-			repo = repository.NewReportGestorRepository(db, qh)
+			repo = repository.NewReportConcnicoRepository(db, qh)
 		default:
 			log.Printf("      ❌ Automação '%s' não suportada para a loja %s.", loja.Automacao, loja.NomeFantasia)
 			db.Close()
@@ -407,7 +407,7 @@ func getQueryHandlerBySystem(loja config.Loja) (querys.QueryHandler, error) {
 	case "CONCINCO":
 		versionStr := fmt.Sprintf("%.1f", loja.CodigoSistema)
 		switch versionStr {
-		case "281":
+		case "28.1":
 			return &concinco.Concinco281{}, nil
 		}
 		return nil, fmt.Errorf("❌ Versão CONCINCO '%g' não implementada", loja.CodigoSistema)

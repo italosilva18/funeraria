@@ -11,6 +11,7 @@ import (
 	"margem/robo/querys"
 	"margem/robo/querys/arius"
 	"margem/robo/querys/arius_erp"
+	"margem/robo/querys/concinco"
 	"margem/robo/querys/derevo"
 	"margem/robo/querys/gestor"
 	"margem/robo/querys/rms"
@@ -82,8 +83,8 @@ func (p *parseService) Parse(startDate, endDate string) error {
 		queryHandler = derevo.GetQueryHandler(fmt.Sprintf("%.1f", p.loja.CodigoSistema))
 		repo = repository.NewReportDerevoRepository(db, queryHandler.(querys.QueryHandler))
 	case "CONCINCO":
-		queryHandler = arius.GetQueryHandler(fmt.Sprintf("%.1f", p.loja.CodigoSistema))
-		repo = repository.NewReportGestorRepository(db, queryHandler.(querys.QueryHandler))
+		queryHandler = concinco.GetQueryHandler(fmt.Sprintf("%.1f", p.loja.CodigoSistema))
+		repo = repository.NewReportConcnicoRepository(db, queryHandler.(querys.QueryHandler))
 	default:
 		return fmt.Errorf("automação '%s' não suportada", p.loja.Automacao)
 	}
