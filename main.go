@@ -18,6 +18,7 @@ import (
 	"margem/robo/helpers"
 	"margem/robo/models/config"
 	"margem/robo/querys"
+	"margem/robo/querys/concinco"
 	"margem/robo/querys/derevo"
 	"margem/robo/querys/gestor"
 	"margem/robo/querys/rms"
@@ -353,6 +354,8 @@ func Teste() (map[int]repository.ReportRepository, map[int]*sql.DB, error) {
 			repo = repository.NewReportRepository(db, qh)
 		case "ARIUS-ERP":
 			repo = repository.NewReportRepository(db, qh)
+		case "CONCINCO":
+			repo = repository.NewReportGestorRepository(db, qh)
 		default:
 			log.Printf("      ❌ Automação '%s' não suportada para a loja %s.", loja.Automacao, loja.NomeFantasia)
 			db.Close()
@@ -401,6 +404,13 @@ func getQueryHandlerBySystem(loja config.Loja) (querys.QueryHandler, error) {
 			return &derevo.Derevo521{}, nil
 		}
 		return nil, fmt.Errorf("❌ Versão DEREVO '%g' não implementada", loja.CodigoSistema)
+	case "CONCINCO":
+		versionStr := fmt.Sprintf("%.1f", loja.CodigoSistema)
+		switch versionStr {
+		case "281":
+			return &concinco.Concinco281{}, nil
+		}
+		return nil, fmt.Errorf("❌ Versão CONCINCO '%g' não implementada", loja.CodigoSistema)
 	default:
 		return nil, fmt.Errorf("❌ Automação '%s' não reconhecida", automacao)
 	}

@@ -22,6 +22,8 @@ func GetConnection(automacao string, loja config.Loja) (Database, error) {
 		return postgresql.New(loja), nil
 	case "ARIUS_ERP":
 		return sqlserver.New(loja), nil
+	case "CONCINCO":
+		return oracle.New(loja), nil
 	default:
 		return nil, fmt.Errorf("automação:'%s' não suportado para '%v'", automacao, loja)
 	}

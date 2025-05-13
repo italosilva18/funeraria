@@ -81,6 +81,9 @@ func (p *parseService) Parse(startDate, endDate string) error {
 	case "DEREVO":
 		queryHandler = derevo.GetQueryHandler(fmt.Sprintf("%.1f", p.loja.CodigoSistema))
 		repo = repository.NewReportDerevoRepository(db, queryHandler.(querys.QueryHandler))
+	case "CONCINCO":
+		queryHandler = arius.GetQueryHandler(fmt.Sprintf("%.1f", p.loja.CodigoSistema))
+		repo = repository.NewReportGestorRepository(db, queryHandler.(querys.QueryHandler))
 	default:
 		return fmt.Errorf("automação '%s' não suportada", p.loja.Automacao)
 	}
