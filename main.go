@@ -15,14 +15,13 @@ import (
 	// Pacotes do projeto
 	"margem/robo/commands"
 	"margem/robo/connections"
+	"margem/robo/helpers"
 	"margem/robo/models/config"
 	"margem/robo/querys"
 	"margem/robo/querys/derevo"
 	"margem/robo/querys/gestor"
 	"margem/robo/querys/rms"
 	"margem/robo/repository"
-
-	// "margem/robo/services"  <-- REMOVIDO
 
 	// Drivers de banco de dados
 	_ "github.com/go-sql-driver/mysql"
@@ -88,8 +87,21 @@ func main() {
 
 	// Configura o arquivo de log
 	fmt.Println("⚙️ Configurando arquivo de Log em ./config/log.txt")
+	logFilePath := "./config/log.txt"
+
+	// Verifica o tamanho atual do log antes da rotação
+	currentSize, err := helpers.CheckLogSize(logFilePath)
+	if err == nil && currentSize > 0 {
+		fmt.Printf("📊 Tamanho atual do log: %s\n", helpers.FormatFileSize(currentSize))
+	}
+
+	// Rotaciona o log se necessário antes de abri-lo para escrita
+	if err := helpers.RotateLogIfNeeded(logFilePath); err != nil {
+		fmt.Printf("⚠️ Aviso: Erro ao rotacionar log: %v\n", err)
+	}
+
 	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
-	logFile, err := os.OpenFile("./config/log.txt", flags, 0666)
+	logFile, err := os.OpenFile(logFilePath, flags, 0666)
 	if err != nil {
 		log.Fatalf("Erro fatal ao abrir arquivo de log: %v", err)
 	}

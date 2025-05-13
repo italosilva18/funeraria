@@ -3,6 +3,7 @@ package commands
 import (
 	"database/sql"
 	"log"
+	"margem/robo/helpers"
 	"margem/robo/models/config"
 	"margem/robo/repository"
 	"time"
@@ -11,12 +12,12 @@ import (
 // -----------------------------------------------------------------------------
 // Configuração do horário extra (01:30 por padrão)
 // -----------------------------------------------------------------------------
-const extraHour = 1 // 01 h
-const extraMin = 30 // 30 min
+const extraHour = 1 // 01 h
+const extraMin = 30 // 30 min
 
 // Run mantém dois fluxos:
 // 1) ticker normal para o dia corrente;
-// 2) goroutine que dorme até o próximo HH:MM e executa o “extra”.
+// 2) goroutine que dorme até o próximo HH:MM e executa o "extra".
 func Run(
 	reportRepos map[int]repository.ReportRepository,
 	dbMap map[int]*sql.DB,
@@ -24,7 +25,8 @@ func Run(
 	cfg config.Config,
 	modoLog string,
 ) {
-	log.Printf("🚀 Run iniciado | ciclo normal: %d min | extra: %02d:%02d",
+	logFilePath := "./config/log.txt" // Caminho para o arquivo de log
+	log.Printf("🚀 Run iniciado | ciclo normal: %d min | extra: %02d:%02d",
 		interval, extraHour, extraMin)
 
 	// Inicia o agendador extra em segundo‑plano.
@@ -34,8 +36,19 @@ func Run(
 	ticker := time.NewTicker(time.Duration(interval) * time.Minute)
 	defer ticker.Stop()
 
+	// Contador para rotação do log (a cada 10 ciclos)
+	cycleCount := 0
+
 	for {
 		executeRunCycle(reportRepos, dbMap, dateNow, cfg, modoLog)
+
+		// Verifica e rotaciona o log a cada 10 ciclos
+		cycleCount++
+		if cycleCount >= 10 {
+			checkAndRotateLog(logFilePath)
+			cycleCount = 0
+		}
+
 		<-ticker.C
 	}
 }
@@ -48,6 +61,7 @@ func scheduleExtra(
 	cfg config.Config,
 	modoLog string,
 ) {
+	logFilePath := "./config/log.txt"
 	for {
 		now := time.Now()
 		next := time.Date(now.Year(), now.Month(), now.Day(),
@@ -65,6 +79,9 @@ func scheduleExtra(
 
 		log.Println("⏰ [Extra] Iniciando sincronização dos 3 dias anteriores…")
 		syncPreviousThreeDays(reportRepos, dbMap, cfg, modoLog, time.Now())
+
+		// Verifica e rotaciona o log após o processamento extra
+		checkAndRotateLog(logFilePath)
 	}
 }
 
@@ -82,5 +99,12 @@ func syncPreviousThreeDays(
 		df := day + " 23:59:59"
 		log.Printf("📆 [Extra] Sincronizando %s (dia ‑%d)", day, i)
 		executeExtraCycle(reportRepos, dbMap, ds, df, cfg, modoLog)
+	}
+}
+
+// checkAndRotateLog verifica e rotaciona o log se necessário
+func checkAndRotateLog(logFilePath string) {
+	if err := helpers.RotateLogIfNeeded(logFilePath); err != nil {
+		log.Printf("⚠️ [Run] Erro ao rotacionar log: %v", err)
 	}
 }
