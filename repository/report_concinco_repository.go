@@ -45,14 +45,14 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 		ProductsService: 0,
 	}
 
-	// Normaliza as datas (caso precise remover HH:MM:SS e ficar só com YYYY-MM-DD)
-	startSimple, endSimple, err := r.normalizeDates(startDate, endDate)
+	// Normaliza a data (no Concinco usamos apenas startDate, endDate é ignorado)
+	startSimple, err := r.normalizeDate(startDate)
 	if err != nil {
 		return report, err
 	}
 
-	// (1) TOTAL_VENDIDO_DIA - params: date, store
-	lucro, custo, valor, err := r.lucroCustoDia(startSimple, endSimple, store)
+	// (1) TOTAL_VENDIDO_DIA - params: date (TO_DATE), store
+	lucro, custo, valor, err := r.lucroCustoDia(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar lucro/custo: %v", err)
 	} else {
@@ -61,24 +61,24 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 		report.TotalAmount = valor
 	}
 
-	// (2) TICKET_MEDIO_DIA - params: store, date
-	tk, err := r.ticketMedio(startSimple, endSimple, store)
+	// (2) TICKET_MEDIO_DIA - params: date, store
+	tk, err := r.ticketMedio(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar ticket médio: %v", err)
 	} else {
 		report.AverageTicket = tk
 	}
 
-	// (3) PRODUTOS_POR_ATENDIMENTO_DIA - params: store, date
-	ppa, err := r.produtoAtendimento(startSimple, endSimple, store)
+	// (3) PRODUTOS_POR_ATENDIMENTO_DIA - params: date, store
+	ppa, err := r.produtoAtendimento(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar produtos por atendimento: %v", err)
 	} else {
 		report.ProductsService = ppa
 	}
 
-	// (4) TOTAL_CUPONS_VALIDOS_DIA - params: store, date
-	validCupom, err := r.totalCupomValido(startSimple, endSimple, store)
+	// (4) TOTAL_CUPONS_VALIDOS_DIA - params: date, store
+	validCupom, err := r.totalCupomValido(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar cupons válidos: %v", err)
 	} else {
@@ -86,34 +86,34 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 	}
 
 	// (5) TOTAL_CUPONS_CANCELADOS_DIA - params: date, store
-	canc, err := r.cuponsCancelados(startSimple, endSimple, store)
+	canc, err := r.cuponsCancelados(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar cupons cancelados: %v", err)
 	} else {
 		report.CanceledCoupons = int64(canc)
 	}
 
-	// (6) VENDAS_POR_FAIXA_HORARIA - params: store, date
-	faixa, err := r.faixaHoraria(startSimple, endSimple, store)
+	// (6) VENDAS_POR_FAIXA_HORARIA - params: date, store
+	faixa, err := r.faixaHoraria(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar vendas por faixa horária: %v", err)
 	} else {
 		report.HourRange = *faixa
 	}
 
-	// (7) PRODUTOS_MAIS_VENDIDO_DIA - params: store, date
-	rank, err := r.rankProdutos(startSimple, endSimple, store)
+	// (7) PRODUTOS_MAIS_VENDIDO_DIA - params: date, store
+	rank, err := r.rankProdutos(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar rank de produtos: %v", err)
 	} else {
 		report.Products = *rank
 	}
 
-	// (8) PRODUTOS_ESTATISTICA - params: store, date
-	_, _ = r.produtosEstatistica(startSimple, endSimple, store)
+	// (8) PRODUTOS_ESTATISTICA - params: date, store
+	_, _ = r.produtosEstatistica(startSimple, store)
 
-	// (9) TOTAL_VENDIDO_POR_MODALIDADES - params: store, date
-	mods, err := r.modalidadesPagamento(startSimple, endSimple, store)
+	// (9) TOTAL_VENDIDO_POR_MODALIDADES - params: date, store
+	mods, err := r.modalidadesPagamento(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar modalidades de pagamento: %v", err)
 	} else {
@@ -121,7 +121,7 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 	}
 
 	// (10) ESTORNO_DE_CUPONS_POR_OPERADOR_DIA - params: date, store
-	estornos, err := r.estornoCupons(startSimple, endSimple, store)
+	estornos, err := r.estornoCupons(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar estornos de cupons: %v", err)
 	} else {
@@ -129,23 +129,23 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 	}
 
 	// (11) DESCONTOS_DE_ITENS_DIA - params: date, store
-	descontos, err := r.descontoItem(startSimple, endSimple, store)
+	descontos, err := r.descontoItem(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar descontos de itens: %v", err)
 	} else {
 		report.Deduction = *descontos
 	}
 
-	// (12) VENDAS_POR_SECOES_DIA - params: date, store
-	secs, err := r.section(startSimple, endSimple, store)
+	// (12) VENDAS_POR_SECOES_DIA - params: date, store (nota: query usa :1 duas vezes)
+	secs, err := r.section(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar vendas por seção: %v", err)
 	} else {
 		report.Sections = *secs
 	}
 
-	// (13) TOTAL_CUPONS_POR_OPERADOR_DIA - params: store, date
-	cuponsOp, err := r.cuponsPorOperador(startSimple, endSimple, store)
+	// (13) TOTAL_CUPONS_POR_OPERADOR_DIA - params: date, store
+	cuponsOp, err := r.cuponsPorOperador(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar cupons por operador: %v", err)
 	} else {
@@ -156,15 +156,15 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 	}
 
 	// (14) VENDAS_POR_VENDEDOR_DIA - params: date, store
-	vend, err := r.vendedores(startSimple, endSimple, store)
+	vend, err := r.vendedores(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar vendas por vendedor: %v", err)
 	} else {
 		report.Salesman = *vend
 	}
 
-	// (15) MODALIDADES_PAGAMENTO_OPERADOR_DIA - params: store, date
-	modOper, err := r.modalidadeOperador(startSimple, endSimple, store)
+	// (15) MODALIDADES_PAGAMENTO_OPERADOR_DIA - params: date, store
+	modOper, err := r.modalidadeOperador(startSimple, store)
 	if err != nil {
 		log.Printf("Erro ao buscar modalidades de pagamento por operador: %v", err)
 	} else {
@@ -174,36 +174,28 @@ func (r *reportConcnicoRepository) FindAllRangeDay(startDate, endDate, store str
 	return report, nil
 }
 
-// normalizeDates converte datas com ou sem HH:MM:SS para apenas YYYY-MM-DD
-func (r *reportConcnicoRepository) normalizeDates(s, e string) (string, string, error) {
+// normalizeDate converte data com ou sem HH:MM:SS para formato Oracle DD/MM/YYYY
+func (r *reportConcnicoRepository) normalizeDate(s string) (string, error) {
 	layoutFull := "2006-01-02 15:04:05"
 	layoutShort := "2006-01-02"
 
 	// Tenta parsear como layoutFull
 	t1, err1 := time.Parse(layoutFull, s)
-	t2, err2 := time.Parse(layoutFull, e)
-	if err1 == nil && err2 == nil {
-		// Converte para formato Oracle DD/MM/YYYY
-		start := t1.Format("02/01/2006")
-		end := t2.Format("02/01/2006")
-		return start, end, nil
+	if err1 == nil {
+		return t1.Format("02/01/2006"), nil
 	}
 
 	// Tenta parsear como layoutShort
-	t3, err3 := time.Parse(layoutShort, s)
-	t4, err4 := time.Parse(layoutShort, e)
-	if err3 == nil && err4 == nil {
-		// Converte para formato Oracle DD/MM/YYYY
-		start := t3.Format("02/01/2006")
-		end := t4.Format("02/01/2006")
-		return start, end, nil
+	t2, err2 := time.Parse(layoutShort, s)
+	if err2 == nil {
+		return t2.Format("02/01/2006"), nil
 	}
 
-	return "", "", fmt.Errorf("datas '%s' e/ou '%s' em formato inválido", s, e)
+	return "", fmt.Errorf("data '%s' em formato inválido", s)
 }
 
-// (1) TOTAL_VENDIDO_DIA - params: date (TO_DATE), store
-func (r *reportConcnicoRepository) lucroCustoDia(start, end, store string) (float64, float64, float64, error) {
+// (1) TOTAL_VENDIDO_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) lucroCustoDia(start, store string) (float64, float64, float64, error) {
 	stmt, err := r.db.Prepare(r.query.TOTAL_VENDIDO_DIA())
 	if err != nil {
 		return 0, 0, 0, err
@@ -223,8 +215,8 @@ func (r *reportConcnicoRepository) lucroCustoDia(start, end, store string) (floa
 	return data.Lucro, data.Custo, data.Valor, nil
 }
 
-// (2) TICKET_MEDIO_DIA - params: store, date
-func (r *reportConcnicoRepository) ticketMedio(start, end, store string) (float64, error) {
+// (2) TICKET_MEDIO_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) ticketMedio(start, store string) (float64, error) {
 	stmt, err := r.db.Prepare(r.query.TICKET_MEDIO_DIA())
 	if err != nil {
 		return 0, err
@@ -232,16 +224,15 @@ func (r *reportConcnicoRepository) ticketMedio(start, end, store string) (float6
 	defer stmt.Close()
 
 	var value float64
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	err = stmt.QueryRow(store, start).Scan(&value)
+	err = stmt.QueryRow(start, store).Scan(&value)
 	if err != nil {
 		return 0, err
 	}
 	return value, nil
 }
 
-// (3) PRODUTOS_POR_ATENDIMENTO_DIA - params: store, date
-func (r *reportConcnicoRepository) produtoAtendimento(start, end, store string) (float64, error) {
+// (3) PRODUTOS_POR_ATENDIMENTO_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) produtoAtendimento(start, store string) (float64, error) {
 	stmt, err := r.db.Prepare(r.query.PRODUTOS_POR_ATENDIMENTO_DIA())
 	if err != nil {
 		return 0, err
@@ -249,41 +240,6 @@ func (r *reportConcnicoRepository) produtoAtendimento(start, end, store string) 
 	defer stmt.Close()
 
 	var val float64
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	err = stmt.QueryRow(store, start).Scan(&val)
-	if err != nil {
-		return 0, err
-	}
-	return val, nil
-}
-
-// (4) TOTAL_CUPONS_VALIDOS_DIA - params: store, date
-func (r *reportConcnicoRepository) totalCupomValido(start, end, store string) (float64, error) {
-	stmt, err := r.db.Prepare(r.query.TOTAL_CUPONS_VALIDOS_DIA())
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
-	var val float64
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	err = stmt.QueryRow(store, start).Scan(&val)
-	if err != nil {
-		return 0, err
-	}
-	return val, nil
-}
-
-// (5) TOTAL_CUPONS_CANCELADOS_DIA - params: date, store
-func (r *reportConcnicoRepository) cuponsCancelados(start, end, store string) (float64, error) {
-	stmt, err := r.db.Prepare(r.query.TOTAL_CUPONS_CANCELADOS_DIA())
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
-	var val float64
-	// Ordem: :1 = date (TO_DATE(:1, 'DD/MM/YYYY')), :2 = store
 	err = stmt.QueryRow(start, store).Scan(&val)
 	if err != nil {
 		return 0, err
@@ -291,16 +247,47 @@ func (r *reportConcnicoRepository) cuponsCancelados(start, end, store string) (f
 	return val, nil
 }
 
-// (6) VENDAS_POR_FAIXA_HORARIA - params: store, date
-func (r *reportConcnicoRepository) faixaHoraria(start, end, store string) (*[]hour.Sales, error) {
+// (4) TOTAL_CUPONS_VALIDOS_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) totalCupomValido(start, store string) (float64, error) {
+	stmt, err := r.db.Prepare(r.query.TOTAL_CUPONS_VALIDOS_DIA())
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var val float64
+	err = stmt.QueryRow(start, store).Scan(&val)
+	if err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
+// (5) TOTAL_CUPONS_CANCELADOS_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) cuponsCancelados(start, store string) (float64, error) {
+	stmt, err := r.db.Prepare(r.query.TOTAL_CUPONS_CANCELADOS_DIA())
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var val float64
+	err = stmt.QueryRow(start, store).Scan(&val)
+	if err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
+// (6) VENDAS_POR_FAIXA_HORARIA - ORDER: date, store
+func (r *reportConcnicoRepository) faixaHoraria(start, store string) (*[]hour.Sales, error) {
 	stmt, err := r.db.Prepare(r.query.VENDAS_POR_FAIXA_HORARIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	rows, err := stmt.Query(store, start)
+	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
 	}
@@ -325,16 +312,15 @@ func (r *reportConcnicoRepository) faixaHoraria(start, end, store string) (*[]ho
 	return &data, nil
 }
 
-// (7) PRODUTOS_MAIS_VENDIDO_DIA - params: store, date
-func (r *reportConcnicoRepository) rankProdutos(start, end, store string) (*[]product.Item, error) {
+// (7) PRODUTOS_MAIS_VENDIDO_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) rankProdutos(start, store string) (*[]product.Item, error) {
 	stmt, err := r.db.Prepare(r.query.PRODUTOS_MAIS_VENDIDO_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	rows, err := stmt.Query(store, start)
+	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
 	}
@@ -342,11 +328,9 @@ func (r *reportConcnicoRepository) rankProdutos(start, end, store string) (*[]pr
 
 	var data []product.Item
 	for rows.Next() {
-		var rownum int
 		var e product.Item
-		// Scan: ROWNUM, cod_produto, descricao, VLR_UNITARIO, QUANTIDADE, TOTAL, CUSTO, lucro
+		// Scan: EAN, DESCRICAO, VALOR_UNITARIO, QUANTIDADE, TOTAL, CUSTO, LUCRO
 		if err := rows.Scan(
-			&rownum,
 			&e.Ean,
 			&e.Description,
 			&e.Price,
@@ -362,16 +346,15 @@ func (r *reportConcnicoRepository) rankProdutos(start, end, store string) (*[]pr
 	return &data, nil
 }
 
-// (8) PRODUTOS_ESTATISTICA - params: store, date
-func (r *reportConcnicoRepository) produtosEstatistica(start, end, store string) (*[]product.Item, error) {
+// (8) PRODUTOS_ESTATISTICA - ORDER: date, store
+func (r *reportConcnicoRepository) produtosEstatistica(start, store string) (*[]product.Item, error) {
 	stmt, err := r.db.Prepare(r.query.PRODUTOS_ESTATISTICA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	rows, err := stmt.Query(store, start)
+	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
 	}
@@ -379,10 +362,8 @@ func (r *reportConcnicoRepository) produtosEstatistica(start, end, store string)
 
 	var data []product.Item
 	for rows.Next() {
-		var rownum int
 		var e product.Item
 		if err := rows.Scan(
-			&rownum,
 			&e.Ean,
 			&e.Description,
 			&e.Price,
@@ -398,16 +379,15 @@ func (r *reportConcnicoRepository) produtosEstatistica(start, end, store string)
 	return &data, nil
 }
 
-// (9) TOTAL_VENDIDO_POR_MODALIDADES - params: store, date
-func (r *reportConcnicoRepository) modalidadesPagamento(start, end, store string) (*[]modality.Sales, error) {
+// (9) TOTAL_VENDIDO_POR_MODALIDADES - ORDER: date, store
+func (r *reportConcnicoRepository) modalidadesPagamento(start, store string) (*[]modality.Sales, error) {
 	stmt, err := r.db.Prepare(r.query.TOTAL_VENDIDO_POR_MODALIDADES())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	rows, err := stmt.Query(store, start)
+	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
 	}
@@ -416,7 +396,7 @@ func (r *reportConcnicoRepository) modalidadesPagamento(start, end, store string
 	var data []modality.Sales
 	for rows.Next() {
 		var e modality.Sales
-		// Scan: CODIGO, DESCRICAO, NRODOCTOS, VLRVENDA
+		// Scan: CODIGO, DESCRICAO, QUANTIDADE, TOTAL
 		if err := rows.Scan(
 			&e.Code,
 			&e.Description,
@@ -430,15 +410,14 @@ func (r *reportConcnicoRepository) modalidadesPagamento(start, end, store string
 	return &data, nil
 }
 
-// (10) ESTORNO_DE_CUPONS_POR_OPERADOR_DIA - params: date, store
-func (r *reportConcnicoRepository) estornoCupons(start, end, store string) (*[]reversed.Coupons, error) {
+// (10) ESTORNO_DE_CUPONS_POR_OPERADOR_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) estornoCupons(start, store string) (*[]reversed.Coupons, error) {
 	stmt, err := r.db.Prepare(r.query.ESTORNO_DE_CUPONS_POR_OPERADOR_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = date (TO_DATE(:1, 'DD/MM/YYYY')), :2 = store
 	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
@@ -449,7 +428,7 @@ func (r *reportConcnicoRepository) estornoCupons(start, end, store string) (*[]r
 	for rows.Next() {
 		var e reversed.Coupons
 		var supervisor *string
-		// Scan: PDV, data, HORA, OPERADOR, SUPERVISOR, TOTAL, CUPOM
+		// Scan: PDV, DATA, HORA, OPERADOR, SUPERVISOR, VALOR, CUPOM
 		if err := rows.Scan(
 			&e.Pdv,
 			&e.Date,
@@ -467,15 +446,14 @@ func (r *reportConcnicoRepository) estornoCupons(start, end, store string) (*[]r
 	return &data, nil
 }
 
-// (11) DESCONTOS_DE_ITENS_DIA - params: date, store
-func (r *reportConcnicoRepository) descontoItem(start, end, store string) (*[]sales.Deduction, error) {
+// (11) DESCONTOS_DE_ITENS_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) descontoItem(start, store string) (*[]sales.Deduction, error) {
 	stmt, err := r.db.Prepare(r.query.DESCONTOS_DE_ITENS_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = date (TO_DATE(:1, 'DD/MM/YYYY')), :2 = store
 	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
@@ -485,12 +463,13 @@ func (r *reportConcnicoRepository) descontoItem(start, end, store string) (*[]sa
 	var data []sales.Deduction
 	for rows.Next() {
 		var e sales.Deduction
-		// Scan: data, HORA, OPERADOR, VALOR, CUPOM, ITEM, EAN, DESCRICAO
-		// Note: A query tem SUM(I.VLRDESCONTO), então não retorna supervisor
+		var supervisor *string
+		// Scan: DATA, HORA, OPERADOR, SUPERVISOR, VALOR, CUPOM, ITEM, EAN, DESCRICAO
 		if err := rows.Scan(
 			&e.Date,
 			&e.Hour,
 			&e.Operator,
+			&supervisor,
 			&e.TotalDeduction,
 			&e.Serial,
 			&e.Item,
@@ -499,22 +478,22 @@ func (r *reportConcnicoRepository) descontoItem(start, end, store string) (*[]sa
 		); err != nil {
 			return nil, err
 		}
-		e.Autorizer = nil // Como a query não retorna supervisor
+		e.Autorizer = supervisor
 		data = append(data, e)
 	}
 	return &data, nil
 }
 
-// (12) VENDAS_POR_SECOES_DIA - params: date, store
-func (r *reportConcnicoRepository) section(start, end, store string) (*[]section.Sales, error) {
+// (12) VENDAS_POR_SECOES_DIA - ORDER: date, store (nota: query usa :1 duas vezes)
+func (r *reportConcnicoRepository) section(start, store string) (*[]section.Sales, error) {
 	stmt, err := r.db.Prepare(r.query.VENDAS_POR_SECOES_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = date (TO_DATE(:1, 'DD/MM/YYYY')), :2 = store
-	rows, err := stmt.Query(start, store)
+	// A query usa :1 duas vezes (na CTE e na query principal)
+	rows, err := stmt.Query(start, store, start, store)
 	if err != nil {
 		return nil, err
 	}
@@ -524,7 +503,7 @@ func (r *reportConcnicoRepository) section(start, end, store string) (*[]section
 	for rows.Next() {
 		var e section.Sales
 		var qtde float64
-		// Scan: codigo, descricao, QUANTIDADE, VALOR, CUSTO, LUCRO
+		// Scan: CODIGO, DESCRICAO, QUANTIDADE, VALOR, CUSTO, LUCRO
 		if err := rows.Scan(
 			&e.Code,
 			&e.Description,
@@ -542,16 +521,15 @@ func (r *reportConcnicoRepository) section(start, end, store string) (*[]section
 	return &data, nil
 }
 
-// (13) TOTAL_CUPONS_POR_OPERADOR_DIA - params: store, date
-func (r *reportConcnicoRepository) cuponsPorOperador(start, end, store string) (*[]coupon.Operator, error) {
+// (13) TOTAL_CUPONS_POR_OPERADOR_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) cuponsPorOperador(start, store string) (*[]coupon.Operator, error) {
 	stmt, err := r.db.Prepare(r.query.TOTAL_CUPONS_POR_OPERADOR_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	rows, err := stmt.Query(store, start)
+	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
 	}
@@ -560,8 +538,8 @@ func (r *reportConcnicoRepository) cuponsPorOperador(start, end, store string) (
 	var data []coupon.Operator
 	for rows.Next() {
 		var e coupon.Operator
-		var dummy float64 // VLRVENDA é retornado mas não usado no modelo
-		// Scan: QTD_CUPONS, OPERADOR, VLRVENDA
+		var dummy float64 // VALOR é retornado mas não usado no modelo
+		// Scan: QTD_CUPONS, OPERADOR, VALOR
 		if err := rows.Scan(&e.Quantity, &e.Name, &dummy); err != nil {
 			return nil, err
 		}
@@ -570,15 +548,14 @@ func (r *reportConcnicoRepository) cuponsPorOperador(start, end, store string) (
 	return &data, nil
 }
 
-// (14) VENDAS_POR_VENDEDOR_DIA - params: date, store
-func (r *reportConcnicoRepository) vendedores(start, end, store string) (*[]sales.Salesman, error) {
+// (14) VENDAS_POR_VENDEDOR_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) vendedores(start, store string) (*[]sales.Salesman, error) {
 	stmt, err := r.db.Prepare(r.query.VENDAS_POR_VENDEDOR_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = date (TO_DATE(:1, 'DD/MM/YYYY')), :2 = store
 	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
@@ -588,9 +565,11 @@ func (r *reportConcnicoRepository) vendedores(start, end, store string) (*[]sale
 	var data []sales.Salesman
 	for rows.Next() {
 		var e sales.Salesman
+		var dataStr string    // DATA é retornada mas não usada
 		var itemFloat float64 // ITEM pode ser decimal
-		// Scan: OPERADOR, VALOR, QTD_CUPONS, ITEM, MEDIA_ITENS, MEDIA_VALOR
+		// Scan: DATA, VENDEDOR, VALOR, CUPONS, ITEM, MEDIA_ITENS, MEDIA_VALOR
 		if err := rows.Scan(
+			&dataStr,
 			&e.Name,
 			&e.Amount,
 			&e.Coupons,
@@ -607,16 +586,15 @@ func (r *reportConcnicoRepository) vendedores(start, end, store string) (*[]sale
 	return &data, nil
 }
 
-// (15) MODALIDADES_PAGAMENTO_OPERADOR_DIA - params: store, date
-func (r *reportConcnicoRepository) modalidadeOperador(start, end, store string) (*[]modality.Operator, error) {
+// (15) MODALIDADES_PAGAMENTO_OPERADOR_DIA - ORDER: date, store
+func (r *reportConcnicoRepository) modalidadeOperador(start, store string) (*[]modality.Operator, error) {
 	stmt, err := r.db.Prepare(r.query.MODALIDADES_PAGAMENTO_OPERADOR_DIA())
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	// Ordem: :1 = store, :2 = date (TO_DATE(:2, 'DD/MM/YYYY'))
-	rows, err := stmt.Query(store, start)
+	rows, err := stmt.Query(start, store)
 	if err != nil {
 		return nil, err
 	}
