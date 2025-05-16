@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	// MaxLogSize é o tamanho máximo do arquivo de log em bytes (por exemplo, 10MB)
-	MaxLogSize = 10 * 1024 * 1024
+	// MaxLogSize é o tamanho máximo do arquivo de log em bytes (por exemplo, 100KB)
+	MaxLogSize = 100 * 1024
 	// KeepPercentage é a porcentagem do log a ser mantida após a rotação
 	KeepPercentage = 30
 )
