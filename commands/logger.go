@@ -18,8 +18,8 @@ func SetLogFile(f *os.File, path string) {
 	logFilePath = path
 }
 
-// reopenLogFile closes the current log file, rotates if needed, and reopens it.
-func reopenLogFile() error {
+// ReopenLogFile closes the current log file, rotates if needed, and reopens it.
+func ReopenLogFile() error {
 	if logFile != nil {
 		logFile.Close()
 	}
