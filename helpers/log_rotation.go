@@ -87,7 +87,7 @@ func RotateLogIfNeeded(logFilePath string) error {
 		return fmt.Errorf("erro ao substituir arquivo de log: %w", err)
 	}
 
-	log.Printf("✂️ Log rotacionado: mantidos %.2f%% dos logs mais recentes (%.2f MB)",
+	log.Printf("✂️ Log rotacionado: mantidos %d%% dos logs mais recentes (%.2f MB)",
 		KeepPercentage, float64(bytesRead-start)/(1024*1024))
 	return nil
 }
