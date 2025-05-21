@@ -102,7 +102,7 @@ func syncPreviousThreeDays(
 
 // checkAndRotateLog verifica e rotaciona o log se necessário
 func checkAndRotateLog() {
-	if err := reopenLogFile(); err != nil {
+	if err := ReopenLogFile(); err != nil {
 		log.Printf("⚠️ [Run] Erro ao rotacionar log: %v", err)
 	}
 }
