@@ -108,6 +108,7 @@ func main() {
 	}
 	defer logFile.Close()
 	log.SetOutput(logFile)
+	commands.SetLogFile(logFile, logFilePath)
 
 	// Exibe o guia de uso somente se solicitado
 	if len(os.Args) < 2 || containsHelp(os.Args[1:]) {
