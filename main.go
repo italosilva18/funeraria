@@ -90,6 +90,11 @@ func main() {
 	fmt.Println("⚙️ Configurando arquivo de Log em ./config/log.txt")
 	logFilePath := "./config/log.txt"
 
+	// Garante a existência do arquivo e as permissões corretas
+	if err := helpers.EnsureLogFile(logFilePath); err != nil {
+		log.Fatalf("Erro ao garantir arquivo de log: %v", err)
+	}
+
 	// Verifica o tamanho atual do log antes da rotação
 	currentSize, err := helpers.CheckLogSize(logFilePath)
 	if err == nil && currentSize > 0 {
