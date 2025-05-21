@@ -3,10 +3,10 @@ package commands
 import (
 	"database/sql"
 	"log"
-	"margem/robo/helpers"
+	"time"
+
 	"margem/robo/models/config"
 	"margem/robo/repository"
-	"time"
 )
 
 // -----------------------------------------------------------------------------
@@ -25,7 +25,6 @@ func Run(
 	cfg config.Config,
 	modoLog string,
 ) {
-	logFilePath := "./config/log.txt" // Caminho para o arquivo de log
 	log.Printf("🚀 Run iniciado | ciclo normal: %d min | extra: %02d:%02d",
 		interval, extraHour, extraMin)
 
@@ -45,7 +44,7 @@ func Run(
 		// Verifica e rotaciona o log a cada 10 ciclos
 		cycleCount++
 		if cycleCount >= 10 {
-			checkAndRotateLog(logFilePath)
+			checkAndRotateLog()
 			cycleCount = 0
 		}
 
@@ -61,7 +60,6 @@ func scheduleExtra(
 	cfg config.Config,
 	modoLog string,
 ) {
-	logFilePath := "./config/log.txt"
 	for {
 		now := time.Now()
 		next := time.Date(now.Year(), now.Month(), now.Day(),
@@ -81,7 +79,7 @@ func scheduleExtra(
 		syncPreviousThreeDays(reportRepos, dbMap, cfg, modoLog, time.Now())
 
 		// Verifica e rotaciona o log após o processamento extra
-		checkAndRotateLog(logFilePath)
+		checkAndRotateLog()
 	}
 }
 
@@ -103,8 +101,8 @@ func syncPreviousThreeDays(
 }
 
 // checkAndRotateLog verifica e rotaciona o log se necessário
-func checkAndRotateLog(logFilePath string) {
-	if err := helpers.RotateLogIfNeeded(logFilePath); err != nil {
+func checkAndRotateLog() {
+	if err := reopenLogFile(); err != nil {
 		log.Printf("⚠️ [Run] Erro ao rotacionar log: %v", err)
 	}
 }
